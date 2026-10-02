@@ -1,42 +1,53 @@
 # ===== AUTOMAÇÃO: COTAÇÃO DO DÓLAR =====
 
 # 0. Importar as bibliotecas
-import pyautogui, pyperclip, time, datetime, csv
+import pyautogui, pyperclip, time, csv, os
+from datetime import datetime
 
 # 0.1 Configurar o PAUSE do pyautogui
-#     (lembra do que você usou no projeto da imersão)
+pyautogui.PAUSE = 0.5
 
 # 1. Abrir o Chrome
-#    - apertar a tecla win
-#    - digitar chrome
-#    - apertar enter
-#    - esperar o Chrome abrir (time.sleep)
+pyautogui.press("win")
+pyautogui.write("Chrome")
+pyautogui.press("enter")
+time.sleep(3)
 
 # 2. Pesquisar a cotação
-#    - digitar "cotação dólar" na barra
-#    - apertar enter
-#    - esperar a página carregar (time.sleep)
+pyautogui.write("Cotacao dolar")
+pyautogui.press("enter")
+time.sleep(3)
 
 # 3. Clicar na caixa do REAL
-#    - usar as coordenadas (x, y) que você descobriu com pyautogui.position()
-#    - selecionar o conteúdo da caixa
+pyautogui.click(x=323, y=492)
+pyautogui.hotkey("ctrl", "a")
 
 # 4. Copiar o valor para dentro do Python
-#    - Ctrl+C
-#    - ler o que foi copiado com pyperclip.paste()
-#    - print() para conferir se veio certo
+pyautogui.hotkey("ctrl", "c")
+valor = pyperclip.paste()
+print(valor)
 
 # 5. Converter o texto em número
 #    - o valor vem como texto com vírgula (ex: "5,43")
-#    - trocar a vírgula por ponto
-#    - converter para float
+valor = valor.replace(",", ".")
+valor = float(valor)
 
 # 6. Pegar a data e a hora atuais
-#    - usar datetime
+momento_atual = datetime.now()
+data = momento_atual.date()
+hora = momento_atual.strftime("%H:%M:%S")
+
 
 # 7. Gravar no CSV
-#    - abrir o cotacao_dolar.csv em modo de adicionar (append)
-#    - se o arquivo estiver vazio, escrever o cabeçalho: data, hora, valor_real
-#    - escrever a linha com data, hora e valor
+tamanho = os.path.getsize("cotacoes.csv") if os.path.exists("cotacoes.csv") else 0
 
-# 8. Fechar o Chrome (opcional, só depois de tudo funcionar)
+with open("cotacoes.csv", "a", newline="", encoding="utf-8") as arquivo:
+    escrita = csv.writer(arquivo)
+    if tamanho == 0:
+        escrita.writerow(["data", "hora", "valor_real"])
+    escrita.writerow([data, hora, valor])
+
+# 8. Fechar o Chrome
+time.sleep(1)
+pyautogui.hotkey("ctrl", "w")
+print("Código finalizado!")
